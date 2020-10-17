@@ -1,0 +1,42 @@
+{
+    "errors": {
+        "errors": [
+            {
+                "value": "",
+                "msg": "Invalid value",
+                "param": "name",
+                "location": "body"
+            },
+            {
+                "value": "",
+                "msg": "Name must be more than 3 charecter long",
+                "param": "name",
+                "location": "body"
+            },
+            {
+                "value": "",
+                "msg": "Invalid value",
+                "param": "email",
+                "location": "body"
+            },
+            {
+                "value": "",
+                "msg": "Email must be valid",
+                "param": "email",
+                "location": "body"
+            },
+            {
+                "value": "",
+                "msg": "Invalid value",
+                "param": "password",
+                "location": "body"
+            },
+            {
+                "value": "",
+                "msg": "Name must be more than 6 charecter long",
+                "param": "password",
+                "location": "body"
+            }
+        ]
+    }
+}
