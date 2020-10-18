@@ -1,0 +1,15 @@
+body{
+    padding:0;
+    margin: 0;
+}
+.wrapper{
+    color: rgb(126, 255, 206);
+    padding: 0;
+    margin: 0;
+    height: 100vh;
+    width: 100%;
+    background-image: url(/img/bg.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}

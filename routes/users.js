@@ -1,6 +1,8 @@
 const express = require('express');
 const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/User');
 const router = express.Router();
 
@@ -59,8 +61,16 @@ router.post("/register",
                       console.log(err);
                       next(err);
                     } else {
-                      console.log("User is saved to the database");
-                      res.redirect('/users/login');
+                      // USING JSON WEB TOKEN TO CREATE TOKEN
+                      //  1 HOURS IN MILI SECONDS
+                      const oneHour = 60 * 60;
+                      jwt.sign({ id: docs._id }, process.env.JWT_SECRET_KEY, { expiresIn: oneHour }, (err, token) => {
+                        if (err) throw Error();
+                        // SET THE TOKEN TO BROWER COOKIES TO SAVE IN LOCAL STORAGE
+                        res.cookie('jwt', token, { maxAge: oneHour * 24, httpOnly: true, });
+                        console.log("User is saved to the database");
+                        res.redirect('/users/login');
+                      });
                     }
                   });
                 });
