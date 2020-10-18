@@ -1,5 +1,5 @@
 const express = require('express');
-const { check, validationResult } = require('express-validator');
+const { check, validationResult, cookie } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -101,6 +101,69 @@ router.post("/register",
 router.get('/login', function (req, res, next) {
   res.render('login');
 });
+
+
+
+router.post('/login',
+  // EXPRESS VALIDATOR
+  [
+    check('email', "Email must be valid").exists().isEmail(),
+    check('password', "Password must be more than 6 charecter long").exists().isLength({ min: 6 })
+  ]
+  , (req, res, next) => {
+    const { email, password } = req.body;
+    // GETTING ERRORS OBJECT FROM EXPRESS VALIDATOR
+    let validationErrors = validationResult(req);
+    // CREATING A NEW VARIABLE -> VARIABLE TO A ARRAY OF VARIABLE
+    let errors = validationErrors.array();
+    if (validationErrors.isEmpty()) {
+      // FIND USER WITH EMAIL FROM DATABASE
+      User.findOne({ email }, (err, docs) => {
+        console.log("trying to find user");
+        if (err) {
+          errors.push({ "msg": "Error to find data from database" });
+          console.log(err);
+          res.render('login', { errorMessage: errors });
+        } else {
+          if (!docs) {
+            errors.push({ "msg": "Incorrect email" });
+            console.log(err);
+            res.render('login', { errorMessage: errors });
+          } else {
+            console.log(docs);
+            // COMPARING PASSWORD
+            bcrypt.compare(password, docs.password, (err, isMatch) => {
+              // IF PASSWORD DOES NOT MATCH
+              if (err) {
+                errors.push({ "msg": "Error match password" });
+                // RENDER WITH ERROR
+                res.render('login', { errorMessage: errors });
+              } else {
+                if (isMatch == false) {
+                  errors.push({ "msg": "Incorrect password" });
+                  // RENDER WITH ERROR
+                  res.render('login', { errorMessage: errors });
+                } else {
+                  // IF EMAIL AND PASSWORD BOTH MATCH LOGIN THE USER
+                  //  1 HOURS IN MILI SECONDS
+                  const oneDay = 60 * 60 * 24;
+                  console.log("email and password both match you are logged in now");
+                  jwt.sign({ id: docs._id }, process.env.JWT_SECRET_KEY, { expiresIn: oneDay * 2 }, (err, token) => {
+                    res.cookie("jwt", token, { maxAge: oneDay * 3, httpOnly: true });
+                    res.redirect('/');
+                  });
+                }
+              }
+
+            });
+          }
+        }
+      });
+    } else {
+      res.render('login', { errorMessage: errors });
+    }
+
+  });
 
 
 
