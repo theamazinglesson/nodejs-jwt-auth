@@ -6,6 +6,8 @@ const logger = require('morgan');
 const mongoose = require('mongoose');
 
 
+
+const {checkAuthentication} = require('./config/auth');
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
@@ -32,7 +34,7 @@ mongoose.connect(process.env.MONGO_URI, { useUnifiedTopology: true, useNewUrlPar
 
 
 
-
+// app.use('*', checkAuthentication);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 

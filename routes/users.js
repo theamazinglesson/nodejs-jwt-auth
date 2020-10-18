@@ -3,6 +3,7 @@ const { check, validationResult, cookie } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+const { reqAuthentication } = require('../config/auth');
 const User = require('../models/User');
 const router = express.Router();
 
@@ -164,6 +165,12 @@ router.post('/login',
     }
 
   });
+
+
+router.get('/dashboard', reqAuthentication, (req, res, next) => {
+  const user = "Shayon";
+  res.render('dashboard', { user })
+})
 
 
 
