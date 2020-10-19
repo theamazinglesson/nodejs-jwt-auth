@@ -3,12 +3,12 @@ const { check, validationResult, cookie } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const { reqAuthentication } = require('../config/auth');
+const { reqAuthentication, notReqAuthentication } = require('../config/auth');
 const User = require('../models/User');
 const router = express.Router();
 
 /* GET users listing. */
-router.get('/register', function (req, res, next) {
+router.get('/register', notReqAuthentication, function (req, res, next) {
   res.render('register');
 });
 
@@ -99,7 +99,7 @@ router.post("/register",
 
 
 /* GET users listing. */
-router.get('/login', function (req, res, next) {
+router.get('/login', notReqAuthentication, function (req, res, next) {
   res.render('login');
 });
 
@@ -168,9 +168,35 @@ router.post('/login',
 
 
 router.get('/dashboard', reqAuthentication, (req, res, next) => {
-  const user = "Shayon";
-  res.render('dashboard', { user })
-})
+  const token = req.cookies.jwt;
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decodedUser) => {
+      if (err) {
+        console.log(err);
+        next(err);
+      } else {
+        User.findById(decodedUser.id, (err, docs) => {
+          const user = docs.name;
+          res.render('dashboard', { user });
+        });
+      }
+    });
+  } else {
+    const user = "Unknown";
+    res.render('dashboard', { user });
+  }
+});
+
+
+
+
+
+
+
+router.get('/logout', (req, res, next) => {
+  res.cookie('jwt', '', { maxAge: 1 });;
+  res.redirect('/');
+});
 
 
 

@@ -33,8 +33,9 @@ mongoose.connect(process.env.MONGO_URI, { useUnifiedTopology: true, useNewUrlPar
 
 
 
+// CHECK FOR ALL GET ROUTE - CHECK AUTH INSIDE OUR VIEW ENGINE
+app.get('*', checkAuthentication);
 
-// app.use('*', checkAuthentication);
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
